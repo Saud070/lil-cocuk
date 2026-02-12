@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Garden For You 🌸</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'vibes': ['"Great Vibes"', 'cursive'],
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        'love-pink': '#ff66a3',
+                        'love-light': '#ff99cc',
+                        'love-dark': '#b30059',
+                    },
+                    animation: {
+                        'gradient-x': 'gradient-x 15s ease infinite',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(-45deg, #ffe6f0, #fff5f9, #fce4ec, #f8bbd0);
+            background-size: 400% 400%;
+            animation: gradient-x 15s ease infinite;
+            transition: background 1.5s ease, color 1.5s ease;
+        }
+
+        /* --- Magical Night Mode --- */
+        body.night-mode {
+            background: linear-gradient(-45deg, #1a0b14, #2d1220, #0f050c, #361024);
+            color: #ffb3d9;
+        }
+        body.night-mode h1, body.night-mode h2, body.night-mode p {
+            color: #ffd9eb !important;
+            text-shadow: 0 0 10px rgba(255, 182, 193, 0.3);
+        }
+        body.night-mode .modal-content {
+            background-color: #2a1521 !important;
+            border-color: #4a2538 !important;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+        }
+        body.night-mode .aesthetic-paper {
+            background-color: #2c2227 !important;
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.6) !important;
+        }
+        body.night-mode .aesthetic-paper p, body.night-mode .aesthetic-paper h2 {
+            color: #fce4ec !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8) !important;
+        }
+
+        /* Falling & Swaying Flower Animation */
+        .flower {
+            position: fixed;
+            top: -10%;
+            pointer-events: none;
+            z-index: 0;
+            user-select: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0) rotate(-15deg); opacity: 0; }
+            10% { opacity: 0.9; }
+            25% { transform: translateY(20vh) translateX(40px) rotate(15deg); }
+            50% { transform: translateY(50vh) translateX(-30px) rotate(-10deg); }
+            75% { transform: translateY(80vh) translateX(30px) rotate(10deg); opacity: 0.9; }
+            100% { transform: translateY(110vh) translateX(-20px) rotate(-15deg); opacity: 0; }
+        }
+
+        /* Heart Cursor Trail */
+        .heart-trail {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+            font-size: 16px;
+            transform: translate(-50%, -50%);
+            animation: floatUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            100% { transform: translate(-50%, -100px) scale(1.5); opacity: 0; }
+        }
+
+        /* Magical Title Animation */
+        .magical-title {
+            background: linear-gradient(110deg, #ff66a3 0%, #ff8fb5 20%, #ffc4d6 40%, #ff66a3 60%, #b30059 80%, #ff66a3 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            opacity: 0;
+            animation: magicalEntrance 3.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, shineGradient 5s linear infinite;
+        }
+
+        @keyframes magicalEntrance {
+            0% { opacity: 0; transform: translateY(25px) scale(0.95); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        @keyframes shineGradient {
+            to { background-position: 200% center; }
+        }
+
+        /* Poetry Fade Animation */
+        .fade-in-poetry {
+            opacity: 0;
+            animation: poetryFadeIn 3s cubic-bezier(0.4, 0, 0.2, 1) 1s forwards;
+        }
+
+        @keyframes poetryFadeIn {
+            0% { opacity: 0; transform: translateY(15px); filter: blur(4px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        /* Base Modal Transitions */
+        .modal {
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+            display: flex !important;
+            pointer-events: none;
+        }
+        .modal:not(.hidden) {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Aesthetic 3D Paper Unfold Animation */
+        #letterModal { perspective: 1200px; }
+        #letterModal:not(.hidden):not(.folding) .aesthetic-paper {
+            transform-origin: top center;
+            animation: unfoldPaper 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        #letterModal.hidden .aesthetic-paper { transform: rotateX(-90deg) scale(0.8); opacity: 0; }
+        #letterModal.folding .aesthetic-paper {
+            transform-origin: top center;
+            animation: foldPaper 0.8s cubic-bezier(0.8, 0, 0.2, 1) forwards;
+        }
+        #letterModal.folding { opacity: 0; transition: opacity 0.8s ease; }
+
+        @keyframes unfoldPaper {
+            0% { transform: rotateX(-80deg) translateY(-50px) scale(0.8); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
+            40% { transform: rotateX(15deg) translateY(10px) scale(1.02); box-shadow: 0 30px 60px rgba(0,0,0,0.15); opacity: 1; }
+            70% { transform: rotateX(-5deg) translateY(0px) scale(0.99); }
+            100% { transform: rotateX(0deg) translateY(0) scale(1); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        }
+
+        @keyframes foldPaper {
+            0% { transform: rotateX(0deg) translateY(0) scale(1); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+            30% { transform: rotateX(-5deg) translateY(10px) scale(1.02); opacity: 1; }
+            100% { transform: rotateX(-80deg) translateY(-50px) scale(0.8); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
+        }
+        
+        /* General content transition for other modals */
+        #galleryModal .modal-content { transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        #galleryModal.hidden .modal-content { transform: scale(0.9); }
+        #galleryModal:not(.hidden) .modal-content { transform: scale(1); }
+        
+        /* Secret Toast Note */
+        .secret-toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(255, 105, 180, 0.95); color: white; padding: 14px 28px; 
+            border-radius: 50px; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 1rem;
+            box-shadow: 0 10px 30px rgba(255,105,180,0.4); z-index: 1000;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+            opacity: 0; pointer-events: none;
+        }
+        body.night-mode .secret-toast {
+            background: rgba(189, 53, 114, 0.95); box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+        .secret-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* Language Fade Effect */
+        #fadeContainer { transition: opacity 0.6s ease; }
+
+        /* Hide scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center text-love-dark relative selection:bg-love-pink selection:text-white">
+
+    <!-- Audio Element -->
+    <audio id="bgMusic" loop>
+        <source src="Daft Punk - Instant Crush (Lyrics) ft. Julian Casablancas - 7clouds Dance.mp3" type="audio/mp3">
+        <!-- Fallback -->
+        <source src="https://upload.wikimedia.org/wikipedia/commons/2/22/Chopin_Nocturne_Op._9%2C_No._2.ogg" type="audio/ogg">
+    </audio>
+
+    <!-- Secret Love Note Toast -->
+    <div id="secretToast" class="secret-toast"></div>
+
+    <!-- Wrapper to beautifully fade everything during translation -->
+    <div id="fadeContainer" class="flex flex-col items-center justify-center w-full min-h-screen z-10">
+        
+        <!-- Main Content Container -->
+        <main class="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl px-6 py-12 text-center flex-grow">
+            
+            <!-- Header -->
+            <div class="mb-10 space-y-4 relative" id="titleContainer">
+                <h1 id="mainTitle" class="magical-title font-vibes text-5xl md:text-7xl font-bold drop-shadow-sm cursor-default relative">
+                    <!-- Title dynamically injected by JS -->
+                </h1>
+                <p id="subTitle" class="text-lg md:text-xl font-light text-rose-800/80 transition-colors duration-500">
+                    <!-- Subtitle injected by JS -->
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button onclick="openModal('letterModal')" class="group relative px-6 py-3 font-medium text-white bg-gradient-to-r from-rose-400 to-pink-400 rounded-full shadow-[0_8px_20px_rgba(251,113,133,0.3)] hover:shadow-[0_12px_25px_rgba(251,113,133,0.4)] hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                    <span id="btnLetterText" class="relative z-10 flex items-center gap-2">open letter</span>
+                </button>
+
+                <button onclick="openModal('galleryModal')" class="group relative px-6 py-3 font-medium text-white bg-gradient-to-r from-fuchsia-400 to-pink-500 rounded-full shadow-[0_8px_20px_rgba(232,121,249,0.3)] hover:shadow-[0_12px_25px_rgba(232,121,249,0.4)] hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                    <span class="relative z-10 flex items-center gap-2">
+                        <span>📸</span> <span id="btnGalleryText">Our Memories</span>
+                    </span>
+                </button>
+                
+                <button onclick="holdHeart()" class="group relative px-6 py-3 font-medium text-rose-700 bg-white/50 backdrop-blur-md border border-rose-200/50 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.05)] hover:bg-white hover:-translate-y-1 transition-all duration-300">
+                    <span id="btnHeartText" class="flex items-center gap-2">Hold My Heart 🤍</span>
+                </button>
+
+                <button id="musicBtn" onclick="toggleMusic()" class="group relative px-6 py-3 font-medium text-rose-700 bg-white/10 backdrop-blur-md border border-rose-200/50 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.05)] hover:bg-white/40 hover:-translate-y-1 transition-all duration-300">
+                    <span class="flex items-center gap-2"><span id="musicIcon">🎵</span> <span id="musicText">Play Music</span></span>
+                </button>
+                
+                <button id="nightModeBtn" onclick="toggleNightMode()" class="group relative px-6 py-3 font-medium text-rose-700 bg-white/10 backdrop-blur-md border border-rose-200/50 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.05)] hover:bg-white/40 hover:-translate-y-1 transition-all duration-300">
+                    <span class="flex items-center gap-2"><span id="nightModeIcon">🌙</span> <span id="nightModeText">Night Mode</span></span>
+                </button>
+
+                <button onclick="toggleLanguage()" class="group relative px-6 py-3 font-medium text-rose-700 bg-white/10 backdrop-blur-md border border-rose-200/50 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.05)] hover:bg-white/40 hover:-translate-y-1 transition-all duration-300">
+                    <span class="flex items-center gap-2"><span>🌍</span> <span id="btnTranslateText">Türkçe 🇹🇷</span></span>
+                </button>
+            </div>
+
+            <!-- Poetry Display -->
+            <div class="bg-white/30 backdrop-blur-xl px-8 py-6 rounded-3xl border border-white/40 shadow-xl transition-colors duration-500 w-full max-w-2xl">
+                <p id="countdown" class="fade-in-poetry text-rose-700 leading-relaxed text-center">
+                    <!-- Injected via JS -->
+                </p>
+            </div>
+
+        </main>
+        
+        <!-- Footer -->
+        <footer class="relative z-10 pb-8 pt-4 text-center w-full max-w-2xl px-4">
+            <p id="footerText1" class="text-xs text-rose-600 opacity-60 font-medium tracking-wide transition-colors duration-500"></p>
+            <p id="footerText2" class="mt-3 text-[13px] text-rose-500 opacity-80 font-medium italic transition-colors duration-500"></p>
+        </footer>
+
+    </div>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. Letter Modal -->
+    <div id="letterModal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-rose-950/40 backdrop-blur-md p-4">
+        <div class="aesthetic-paper bg-[#fcf9f2] p-8 md:p-14 w-full max-w-lg relative rounded-sm transition-colors duration-700" 
+             style="background-image: linear-gradient(rgba(200, 180, 150, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(200, 180, 150, 0.05) 1px, transparent 1px); background-size: 20px 20px; box-shadow: inset 0 0 60px rgba(220, 190, 160, 0.2);">
+            
+            <div class="absolute top-1/3 left-0 w-full h-[1px] bg-black/5 shadow-[0_1px_1px_rgba(255,255,255,0.7)] pointer-events-none"></div>
+            <div class="absolute top-2/3 left-0 w-full h-[1px] bg-black/5 shadow-[0_1px_1px_rgba(255,255,255,0.7)] pointer-events-none"></div>
+            
+            <h2 id="letterTitle" class="font-vibes text-5xl text-rose-800 mb-8 text-center" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.05);"></h2>
+            
+            <div id="letterText" class="font-poppins text-gray-800 leading-loose space-y-5 text-center text-lg italic tracking-wide min-h-[200px]" style="text-shadow: 1px 1px 0px rgba(255,255,255,0.8);"></div>
+            
+            <div class="mt-12 flex justify-center">
+                <button id="btnLetterClose" onclick="closeModal('letterModal')" class="px-8 py-2 border border-rose-300/50 text-rose-600/80 rounded-sm hover:bg-rose-50/50 hover:text-rose-800 transition-colors font-medium tracking-widest text-sm uppercase"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Gallery Modal -->
+    <div id="galleryModal" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-rose-900/40 backdrop-blur-md p-4">
+        <div class="modal-content bg-white/95 p-6 md:p-8 rounded-[2rem] shadow-2xl w-full max-w-4xl border border-white/50 transition-colors duration-700">
+            <div class="flex justify-between items-center mb-6 px-2">
+                <h2 id="galleryTitle" class="font-poppins font-semibold text-2xl text-rose-600"></h2>
+                <button onclick="closeModal('galleryModal')" class="text-gray-400 hover:text-rose-500 transition-colors">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Gallery Grid with 14 Images (Now a proper vertically scrolling grid!) -->
+            <div id="galleryGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto max-h-[60vh] scroll-smooth p-2">
+                <!-- Images 1-9 (.jpeg) -->
+                <div onclick="openLightbox('1.jpeg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="1.jpeg" alt="Memory 1" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div onclick="openLightbox('2.jpeg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="2.jpeg" alt="Memory 2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div onclick="openLightbox('3.jpeg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="3.jpeg" alt="Memory 3" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div onclick="openLightbox('4.jpeg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="4.jpeg" alt="Memory 4" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div onclick="openLightbox('5.jpeg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="5.jpeg" alt="Memory 5" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div onclick="openLightbox('6.jpeg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="6.jpeg" alt="Memory 6" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div onclick="openLightbox('7.jpeg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="7.jpeg" alt="Memory 7" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div onclick="openLightbox('8.jpeg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="8.jpeg" alt="Memory 8" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div onclick="openLightbox('9.jpeg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="9.jpeg" alt="Memory 9" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <!-- Images 10-11 (.jpg) -->
+                <div onclick="openLightbox('10.jpg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="10.jpg" alt="Memory 10" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div onclick="openLightbox('11.jpg')" class="gallery-item opacity-0 translate-y-4 transition-all duration-700 ease-out aspect-square rounded-2xl overflow-hidden shadow-md group relative cursor-pointer hover:shadow-xl hover:scale-[1.02]">
+                    <img src="11.jpg" alt="Memory 11" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+            </div>
+            <p id="lblSwipe" class="text-center text-sm text-gray-400 mt-4 md:hidden"></p>
+        </div>
+    </div>
+
+    <!-- 3. Lightbox (Big Image View) -->
+    <div id="lightbox" class="fixed inset-0 z-[60] bg-black/90 hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0" onclick="closeLightbox()">
+        <img id="lightboxImg" src="" alt="Full View" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl transform scale-95 transition-transform duration-300">
+        <button class="absolute top-6 right-6 text-white text-4xl font-bold hover:text-gray-300 drop-shadow-md">&times;</button>
+    </div>
+
+    <script>
+        // --- Translation & Language State ---
+        let currentLang = 'en';
+
+        const translations = {
+            en: {
+                title: "For My Lil Cocuk 🌸", 
+                subtitle: "A little magical garden made just for you...",
+                nightSubtitle: "Can't sleep? Me neither. Thinking of you 🌙",
+                openLetter: "open letter",
+                ourMemories: "Our Memories",
+                holdHeart: "Hold My Heart 🤍",
+                playMusic: "Play Music",
+                pauseMusic: "Pause Music",
+                nightMode: "Night Mode",
+                dayMode: "Day Mode",
+                translateBtn: "Türkçe 🇹🇷",
+                poetry: `<span class="font-vibes text-[1.4rem] md:text-[1.6rem] opacity-90 tracking-wide">If I could hold onto every quiet moment, every shared laugh, and every time you smiled... I would keep them safe forever.</span><br><br><span class="font-vibes text-[1.6rem] md:text-[1.8rem] text-rose-600 mt-2 inline-block">Thank you for being my most beautiful chapter. 🤍</span>`,
+                footer1: `Built with love by your Big Cocuk who thinks you're the best thing that ever happened to him. <span class="cursor-pointer hover:opacity-100 transition-opacity" onclick="showSecret()" title="Click me for a secret">💖</span>`,
+                footer2: `“If you ever forget how loved you are, come back here.”`,
+                letterTitle: "My baby girl 🌷",
+                letterMessage: `You were the calm in my chaos, the poetry in my silence, and the bloom in my every season.<br><br>Loving you felt like a spring that would never end. Every moment with you became a memory I will keep forever.<br><br><span class="text-sm opacity-70 mt-4 block">PS: If I had one wish, it would simply be for you to smile and be happy forever.</span>`,
+                letterClose: "Gently Fold Letter",
+                galleryTitle: "Our Beautiful Moments 🌹",
+                lblSwipe: "Scroll down to see more ↓",
+                destiny: `<span class="leading-relaxed">Out of 8 billion people…<br>we found each other 💖</span>`,
+                whisper: "I love you more than yesterday 🌸",
+                secrets: ["You make my world softer 🌸", "If I had to choose again, I’d still choose you 💖", "You are my safest place 🌷", "I love you more than words can say ✨", "Every day is a gift because of you 💌"]
+            },
+            tr: {
+                title: "Benim Lil Cocuk İçin 🌸",
+                subtitle: "Sadece senin için yapılmış küçük büyülü bir bahçe...",
+                nightSubtitle: "Uyuyamıyor musun? Ben de. Seni düşünüyorum 🌙",
+                openLetter: "mektubu aç",
+                ourMemories: "Anılarımız",
+                holdHeart: "Kalbimi Tut 🤍",
+                playMusic: "Müzik Çal",
+                pauseMusic: "Müziği Durdur",
+                nightMode: "Gece Modu",
+                dayMode: "Gündüz Modu",
+                translateBtn: "English 🇬🇧",
+                poetry: `<span class="font-vibes text-[1.4rem] md:text-[1.6rem] opacity-90 tracking-wide">Her sessiz anı, paylaştığımız her gülüşü ve gülümsediğin her zamanı tutabilseydim... onları sonsuza dek saklardım.</span><br><br><span class="font-vibes text-[1.6rem] md:text-[1.8rem] text-rose-600 mt-2 inline-block">En güzel bölümüm olduğun için teşekkür ederim. 🤍</span>`,
+                footer1: `Senin, başına gelen en güzel şey olduğunu düşünen your Big Cocuk tarafından sevgiyle yapıldı. <span class="cursor-pointer hover:opacity-100 transition-opacity" onclick="showSecret()" title="Bana tıkla">💖</span>`,
+                footer2: `“Ne kadar sevildiğini unutursan, buraya geri dön.”`,
+                letterTitle: "Bebeğim 🌷",
+                letterMessage: `Kaosumdaki sakinlik, sessizliğimdeki şiir ve her mevsimimdeki çiçek sendin.<br><br>Seni sevmek, hiç bitmeyecek bir ilkbahar gibiydi. Seninle geçen her an, sonsuza dek saklayacağım bir anıya dönüştü.<br><br><span class="text-sm opacity-70 mt-4 block">Not: Tek bir dilek hakkım olsaydı, o sadece senin sonsuza dek gülümsemen ve mutlu olman olurdu.</span>`,
+                letterClose: "Mektubu Nazikçe Katla",
+                galleryTitle: "Güzel Anılarımız 🌹",
+                lblSwipe: "Daha fazlası için aşağı kaydır ↓",
+                destiny: `<span class="leading-relaxed">8 milyar insan arasından…<br>birbirimizi bulduk 💖</span>`,
+                whisper: "Seni dünden daha çok seviyorum 🌸",
+                secrets: ["Dünyamı yumuşatıyorsun 🌸", "Tekrar seçmem gerekse, yine seni seçerdim 💖", "Sen benim en güvenli yerimsin 🌷", "Seni kelimelerin anlatabileceğinden daha çok seviyorum ✨", "Senin sayende her gün bir hediye 💌"]
+            }
+        };
+
+        let letterMessage = translations.en.letterMessage;
+        let secrets = translations.en.secrets;
+
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            const isNight = document.body.classList.contains("night-mode");
+            
+            document.getElementById("mainTitle").innerHTML = t.title;
+            document.getElementById("subTitle").innerHTML = isNight ? t.nightSubtitle : t.subtitle;
+            document.getElementById("btnLetterText").innerText = t.openLetter;
+            document.getElementById("btnGalleryText").innerText = t.ourMemories;
+            document.getElementById("btnHeartText").innerText = t.holdHeart;
+            const musicPaused = document.getElementById("bgMusic").paused;
+            document.getElementById("musicText").innerText = musicPaused ? t.playMusic : t.pauseMusic;
+            document.getElementById("nightModeText").innerText = isNight ? t.dayMode : t.nightMode;
+            document.getElementById("btnTranslateText").innerText = t.translateBtn;
+            document.getElementById("countdown").innerHTML = t.poetry;
+            document.getElementById("footerText1").innerHTML = t.footer1;
+            document.getElementById("footerText2").innerHTML = t.footer2;
+            document.getElementById("letterTitle").innerHTML = t.letterTitle;
+            document.getElementById("btnLetterClose").innerText = t.letterClose;
+            document.getElementById("galleryTitle").innerText = t.galleryTitle;
+            document.getElementById("lblSwipe").innerText = t.lblSwipe;
+            letterMessage = t.letterMessage;
+            secrets = t.secrets;
+            if (!document.getElementById("letterModal").classList.contains("hidden")) typeLetter();
+        }
+
+        function toggleLanguage() {
+            const fadeContainer = document.getElementById("fadeContainer");
+            fadeContainer.style.opacity = 0;
+            setTimeout(() => {
+                currentLang = currentLang === 'en' ? 'tr' : 'en';
+                applyTranslations(currentLang);
+                fadeContainer.style.opacity = 1;
+            }, 600);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            applyTranslations('en');
+            const hour = new Date().getHours();
+            if (hour >= 0 && hour < 5) {
+                document.body.classList.add("night-mode");
+                document.getElementById("nightModeText").innerText = translations[currentLang].dayMode;
+                document.getElementById("nightModeIcon").innerText = "☀️";
+                document.getElementById("subTitle").innerHTML = translations[currentLang].nightSubtitle;
+            }
+
+            // Destiny Moment
+            setTimeout(() => {
+                const flowers = document.querySelectorAll('.flower');
+                flowers.forEach(f => { f.style.transition = "opacity 1s ease"; f.style.opacity = "0"; });
+                const destiny = document.createElement("div");
+                destiny.className = "fixed inset-0 flex items-center justify-center text-center text-2xl md:text-4xl bg-white/70 backdrop-blur-md z-[200] font-poppins text-love-dark opacity-0 transition-opacity duration-1000";
+                if(document.body.classList.contains("night-mode")) {
+                    destiny.classList.replace("bg-white/70", "bg-black/80");
+                    destiny.classList.replace("text-love-dark", "text-pink-300");
+                }
+                destiny.innerHTML = translations[currentLang].destiny;
+                document.body.appendChild(destiny);
+                setTimeout(() => destiny.classList.remove('opacity-0'), 100);
+                setTimeout(() => { destiny.classList.add('opacity-0'); setTimeout(() => destiny.remove(), 1000); }, 4000);
+            }, 5000); 
+        });
+
+        // Whisper Mode
+        const titleContainer = document.getElementById("titleContainer");
+        titleContainer.addEventListener("mouseenter", () => {
+            if (document.getElementById("whisper-text")) return;
+            const whisper = document.createElement("div");
+            whisper.id = "whisper-text";
+            whisper.innerHTML = translations[currentLang].whisper;
+            whisper.className = "absolute left-1/2 -translate-x-1/2 top-[105%] text-sm md:text-base font-poppins text-rose-500 opacity-0 transition-opacity duration-1000 pointer-events-none whitespace-nowrap tracking-wide";
+            if(document.body.classList.contains("night-mode")) whisper.classList.replace("text-rose-500", "text-pink-300");
+            titleContainer.appendChild(whisper);
+            setTimeout(() => whisper.style.opacity = "1", 50);
+            setTimeout(() => { whisper.style.opacity = "0"; setTimeout(() => whisper.remove(), 1000); }, 3000);
+        });
+
+        function holdHeart() {
+            const heart = document.createElement("div");
+            heart.innerHTML = "🤍";
+            heart.className = "fixed inset-0 flex items-center justify-center text-[8rem] md:text-[12rem] bg-white/85 backdrop-blur-sm z-[300] opacity-0 transition-opacity duration-1000 pointer-events-none";
+            if(document.body.classList.contains("night-mode")) heart.classList.replace("bg-white/85", "bg-black/85");
+            document.body.appendChild(heart);
+            setTimeout(() => heart.classList.remove("opacity-0"), 50);
+            setTimeout(() => { heart.classList.add("opacity-0"); setTimeout(() => heart.remove(), 1000); }, 2500);
+        }
+
+        function toggleNightMode() {
+            document.body.classList.toggle("night-mode");
+            const btnText = document.getElementById("nightModeText");
+            const btnIcon = document.getElementById("nightModeIcon");
+            if (document.body.classList.contains("night-mode")) {
+                btnText.innerText = translations[currentLang].dayMode;
+                btnIcon.innerText = "☀️";
+                document.getElementById("subTitle").innerHTML = translations[currentLang].nightSubtitle;
+            } else {
+                btnText.innerText = translations[currentLang].nightMode;
+                btnIcon.innerText = "🌙";
+                document.getElementById("subTitle").innerHTML = translations[currentLang].subtitle;
+            }
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById("bgMusic");
+            const btnText = document.getElementById("musicText");
+            const btnIcon = document.getElementById("musicIcon");
+            if (music.paused) {
+                music.volume = 0;
+                music.play().catch(e => console.log("Audio play prevented:", e));
+                let fade = setInterval(() => {
+                    if (music.volume < 0.95) music.volume += 0.05; else { music.volume = 1; clearInterval(fade); }
+                }, 150);
+                btnText.innerText = translations[currentLang].pauseMusic;
+                btnIcon.innerText = "⏸️";
+            } else {
+                let fadeOut = setInterval(() => {
+                    if (music.volume > 0.05) music.volume -= 0.05; else { music.pause(); music.volume = 1; clearInterval(fadeOut); }
+                }, 100);
+                btnText.innerText = translations[currentLang].playMusic;
+                btnIcon.innerText = "🎵";
+            }
+        }
+
+        let typingTimeout;
+        function typeLetter() {
+            const el = document.getElementById("letterText");
+            el.innerHTML = "";
+            clearTimeout(typingTimeout); 
+            let i = 0;
+            function typing() {
+                if (i < letterMessage.length) {
+                    if (letterMessage.substring(i, i + 4) === '<br>') { el.innerHTML += '<br>'; i += 4; typingTimeout = setTimeout(typing, 40); }
+                    else if (letterMessage.substring(i, i + 6) === '<span ') { const endSpan = letterMessage.indexOf('>', i) + 1; el.innerHTML += letterMessage.substring(i, endSpan); i = endSpan; typingTimeout = setTimeout(typing, 40); }
+                    else if (letterMessage.substring(i, i + 7) === '</span>') { el.innerHTML += '</span>'; i += 7; typingTimeout = setTimeout(typing, 40); }
+                    else { el.innerHTML += letterMessage.charAt(i); i++; typingTimeout = setTimeout(typing, 35); }
+                }
+            }
+            setTimeout(typing, 500); 
+        }
+
+        function openLightbox(src) {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            img.src = src;
+            lb.classList.remove('hidden');
+            // slight delay for fade in
+            setTimeout(() => {
+                lb.classList.remove('opacity-0');
+                img.classList.remove('scale-95');
+                img.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeLightbox() {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            lb.classList.add('opacity-0');
+            img.classList.remove('scale-100');
+            img.classList.add('scale-95');
+            setTimeout(() => {
+                lb.classList.add('hidden');
+            }, 300);
+        }
+
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('hidden');
+            modal.classList.remove('folding');
+            if (id === 'letterModal') typeLetter();
+            if (id === 'galleryModal') {
+                const gallery = document.getElementById('galleryGrid');
+                // Ensure scroll resets
+                gallery.scrollTop = 0;
+                
+                const images = document.querySelectorAll('.gallery-item');
+                images.forEach(img => { img.classList.add('opacity-0', 'translate-y-4'); img.classList.remove('opacity-100', 'translate-y-0'); });
+                images.forEach((img, index) => { setTimeout(() => { img.classList.remove('opacity-0', 'translate-y-4'); img.classList.add('opacity-100', 'translate-y-0'); }, index * 100); });
+            }
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (id === 'letterModal') { modal.classList.add('folding'); setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('folding'); }, 800); }
+            else modal.classList.add('hidden');
+        }
+
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => { if (event.target === modal) closeModal(modal.id); });
+        }
+        
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                // If lightbox is open, close it first
+                const lb = document.getElementById('lightbox');
+                if(!lb.classList.contains('hidden')) {
+                    closeLightbox();
+                } else {
+                    document.querySelectorAll('.modal:not(.hidden)').forEach(m => closeModal(m.id));
+                }
+            }
+            if (e.key.toLowerCase() === "l") showSecret();
+        });
+
+        // --- Click Anywhere to Plant a Flower (RESTORED) ---
+        document.addEventListener("click", function(e) {
+            // Don't plant if clicking on button, modal content, lightbox, or footer
+            if(e.target.closest('button') || e.target.closest('.modal-content') || e.target.closest('.aesthetic-paper') || e.target.closest('footer') || e.target.closest('#lightbox')) return;
+            const bloom = document.createElement("div");
+            bloom.innerHTML = ['🌷', '🌸', '🌹', '✨'][Math.floor(Math.random() * 4)];
+            bloom.style.position = "fixed";
+            bloom.style.left = `${e.clientX}px`;
+            bloom.style.top = `${e.clientY}px`;
+            bloom.style.fontSize = "2.5rem";
+            bloom.style.transform = "translate(-50%, -50%) scale(0)";
+            bloom.style.transition = "transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1.5s ease";
+            bloom.style.pointerEvents = "none";
+            bloom.style.zIndex = "40";
+            bloom.style.filter = "drop-shadow(0px 4px 6px rgba(0,0,0,0.1))";
+            document.body.appendChild(bloom);
+            requestAnimationFrame(() => { bloom.style.transform = "translate(-50%, -50%) scale(1)"; });
+            setTimeout(() => { bloom.style.opacity = "0"; }, 1500);
+            setTimeout(() => bloom.remove(), 3000);
+        });
+
+        let toastTimeout;
+        function showSecret() {
+            const toast = document.getElementById("secretToast");
+            toast.innerText = secrets[Math.floor(Math.random() * secrets.length)];
+            toast.classList.add("show");
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.remove("show"), 4000);
+        }
+
+        let flowerCount = 0; const MAX_FLOWERS = 35;
+        function createFlower() {
+            if (flowerCount >= MAX_FLOWERS) return; 
+            flowerCount++;
+            const flower = document.createElement('div');
+            flower.classList.add('flower');
+            const types = ['🌷', '🌷', '🌷', '🌷', '🌷', '🌸', '🌹', '✨', '💖'];
+            flower.innerHTML = types[Math.floor(Math.random() * types.length)];
+            const size = Math.random() * 1.5 + 1;
+            flower.style.fontSize = `${size}rem`;
+            flower.style.left = `${Math.random() * 100}vw`;
+            const duration = Math.random() * 6 + 6; 
+            flower.style.animationDuration = `${duration}s`;
+            document.body.appendChild(flower);
+            setTimeout(() => { flower.remove(); flowerCount--; }, duration * 1000);
+        }
+        setInterval(createFlower, 400);
+        for(let i=0; i<8; i++) setTimeout(createFlower, i * 150);
+
+        let lastTrailTime = 0;
+        function createTrail(x, y) {
+            const now = Date.now();
+            if (now - lastTrailTime < 50) return;
+            lastTrailTime = now;
+            const heart = document.createElement('div');
+            heart.classList.add('heart-trail');
+            heart.innerHTML = ['💗', '💕', '✨', '💖'][Math.floor(Math.random() * 4)];
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            const offsetX = (Math.random() - 0.5) * 20;
+            const offsetY = (Math.random() - 0.5) * 20;
+            heart.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1000);
+        }
+        document.addEventListener('mousemove', function(e) { createTrail(e.clientX, e.clientY); });
+        document.addEventListener('touchmove', function(e) { if(e.touches.length > 0) createTrail(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    </script>
+</body>
+</html>
