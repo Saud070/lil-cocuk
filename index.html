@@ -202,6 +202,22 @@
         /* Language Fade Effect */
         #fadeContainer { transition: opacity 0.6s ease; }
 
+        /* Interaction Overlay for Audio Autoplay */
+        #interactionOverlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(2px);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+        .click-hint {
+            background: rgba(255, 105, 180, 0.9); color: white;
+            padding: 15px 30px; border-radius: 50px;
+            font-family: 'Poppins', sans-serif; font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
         /* Hide scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -209,11 +225,14 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center text-love-dark relative selection:bg-love-pink selection:text-white">
 
-    <!-- Audio Element -->
-    <audio id="bgMusic" loop>
-        <source src="Daft Punk - Instant Crush (Lyrics) ft. Julian Casablancas - 7clouds Dance.mp3" type="audio/mp3">
-        <!-- Fallback -->
-        <source src="https://upload.wikimedia.org/wikipedia/commons/2/22/Chopin_Nocturne_Op._9%2C_No._2.ogg" type="audio/ogg">
+    <!-- Interaction Overlay for Audio -->
+    <div id="interactionOverlay" onclick="startExperience()">
+        <div class="click-hint">Tap anywhere to enter our garden ✨</div>
+    </div>
+
+    <!-- Audio Element with Playlist Logic -->
+    <audio id="bgMusic" onended="playNextSong()">
+        <!-- Initial source will be set by JS -->
     </audio>
 
     <!-- Secret Love Note Toast -->
@@ -251,9 +270,14 @@
                     <span id="btnHeartText" class="flex items-center gap-2">Hold My Heart 🤍</span>
                 </button>
 
-                <button id="musicBtn" onclick="toggleMusic()" class="group relative px-6 py-3 font-medium text-rose-700 bg-white/10 backdrop-blur-md border border-rose-200/50 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.05)] hover:bg-white/40 hover:-translate-y-1 transition-all duration-300">
-                    <span class="flex items-center gap-2"><span id="musicIcon">🎵</span> <span id="musicText">Play Music</span></span>
-                </button>
+                <div class="flex gap-2">
+                    <button id="musicBtn" onclick="toggleMusic()" class="group relative px-4 py-3 font-medium text-rose-700 bg-white/10 backdrop-blur-md border border-rose-200/50 rounded-l-full shadow-[0_8px_20px_rgba(0,0,0,0.05)] hover:bg-white/40 hover:-translate-y-1 transition-all duration-300">
+                        <span class="flex items-center gap-2"><span id="musicIcon">⏸️</span> <span id="musicText">Pause</span></span>
+                    </button>
+                    <button onclick="playNextSong()" class="group relative px-3 py-3 font-medium text-rose-700 bg-white/10 backdrop-blur-md border border-rose-200/50 rounded-r-full shadow-[0_8px_20px_rgba(0,0,0,0.05)] hover:bg-white/40 hover:-translate-y-1 transition-all duration-300" title="Next Song">
+                        ⏭️
+                    </button>
+                </div>
                 
                 <button id="nightModeBtn" onclick="toggleNightMode()" class="group relative px-6 py-3 font-medium text-rose-700 bg-white/10 backdrop-blur-md border border-rose-200/50 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.05)] hover:bg-white/40 hover:-translate-y-1 transition-all duration-300">
                     <span class="flex items-center gap-2"><span id="nightModeIcon">🌙</span> <span id="nightModeText">Night Mode</span></span>
@@ -374,6 +398,59 @@
         // --- Translation & Language State ---
         let currentLang = 'en';
 
+        // --- Playlist Configuration ---
+        const playlist = [
+            "Lord Huron - The Night We Met (Official Audio) - Lord Huron.mp3",
+            "Daft Punk - Instant Crush (Lyrics) ft. Julian Casablancas - 7clouds Dance.mp3",
+            "Anıl Emre Daldal - M. (English Translation & Original Lyrics) - Gizem Kurt.mp3"
+        ];
+        let currentSongIndex = 0;
+
+        // --- Music Functions ---
+        function startExperience() {
+            // Remove the overlay
+            const overlay = document.getElementById('interactionOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 500);
+
+            // Start playing the first song
+            const music = document.getElementById("bgMusic");
+            music.src = playlist[currentSongIndex];
+            music.volume = 0;
+            music.play().then(() => {
+                // Fade in
+                let fade = setInterval(() => {
+                    if (music.volume < 0.95) music.volume += 0.05; 
+                    else { music.volume = 1; clearInterval(fade); }
+                }, 200);
+            }).catch(e => console.log("Auto-play blocked, waiting for interaction"));
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById("bgMusic");
+            const btnText = document.getElementById("musicText");
+            const btnIcon = document.getElementById("musicIcon");
+            if (music.paused) {
+                music.play();
+                btnText.innerText = translations[currentLang].pauseMusic;
+                btnIcon.innerText = "⏸️";
+            } else {
+                music.pause();
+                btnText.innerText = translations[currentLang].playMusic;
+                btnIcon.innerText = "🎵";
+            }
+        }
+
+        function playNextSong() {
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            const music = document.getElementById("bgMusic");
+            music.src = playlist[currentSongIndex];
+            music.play();
+            // Ensure button state is correct
+            document.getElementById("musicText").innerText = translations[currentLang].pauseMusic;
+            document.getElementById("musicIcon").innerText = "⏸️";
+        }
+
         const translations = {
             en: {
                 title: "For My Lil Cocuk 🌸", 
@@ -437,8 +514,10 @@
             document.getElementById("btnLetterText").innerText = t.openLetter;
             document.getElementById("btnGalleryText").innerText = t.ourMemories;
             document.getElementById("btnHeartText").innerText = t.holdHeart;
-            const musicPaused = document.getElementById("bgMusic").paused;
-            document.getElementById("musicText").innerText = musicPaused ? t.playMusic : t.pauseMusic;
+            
+            const music = document.getElementById("bgMusic");
+            document.getElementById("musicText").innerText = music.paused ? t.playMusic : t.pauseMusic;
+            
             document.getElementById("nightModeText").innerText = isNight ? t.dayMode : t.nightMode;
             document.getElementById("btnTranslateText").innerText = t.translateBtn;
             document.getElementById("countdown").innerHTML = t.poetry;
@@ -529,27 +608,6 @@
             }
         }
 
-        function toggleMusic() {
-            const music = document.getElementById("bgMusic");
-            const btnText = document.getElementById("musicText");
-            const btnIcon = document.getElementById("musicIcon");
-            if (music.paused) {
-                music.volume = 0;
-                music.play().catch(e => console.log("Audio play prevented:", e));
-                let fade = setInterval(() => {
-                    if (music.volume < 0.95) music.volume += 0.05; else { music.volume = 1; clearInterval(fade); }
-                }, 150);
-                btnText.innerText = translations[currentLang].pauseMusic;
-                btnIcon.innerText = "⏸️";
-            } else {
-                let fadeOut = setInterval(() => {
-                    if (music.volume > 0.05) music.volume -= 0.05; else { music.pause(); music.volume = 1; clearInterval(fadeOut); }
-                }, 100);
-                btnText.innerText = translations[currentLang].playMusic;
-                btnIcon.innerText = "🎵";
-            }
-        }
-
         let typingTimeout;
         function typeLetter() {
             const el = document.getElementById("letterText");
@@ -634,7 +692,7 @@
         // --- Click Anywhere to Plant a Flower (RESTORED) ---
         document.addEventListener("click", function(e) {
             // Don't plant if clicking on button, modal content, lightbox, or footer
-            if(e.target.closest('button') || e.target.closest('.modal-content') || e.target.closest('.aesthetic-paper') || e.target.closest('footer') || e.target.closest('#lightbox')) return;
+            if(e.target.closest('button') || e.target.closest('.modal-content') || e.target.closest('.aesthetic-paper') || e.target.closest('footer') || e.target.closest('#lightbox') || e.target.id === 'interactionOverlay') return;
             const bloom = document.createElement("div");
             bloom.innerHTML = ['🌷', '🌸', '🌹', '✨'][Math.floor(Math.random() * 4)];
             bloom.style.position = "fixed";
